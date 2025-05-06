@@ -1,10 +1,51 @@
 import re
 from playwright.sync_api import Page, expect
+import random
+import string
+
+
+def generate_random_user():
+    name = 'user_' + ''.join(random.choices(string.ascii_letters, k=6))
+    email = name + "@example.com"
+    password = "Test1234"
+    return name, email, password
+
+
+def register_user(page: Page, username: str, email: str, password: str):
+        page.goto("https://automationexercise.com/")
+        page.get_by_role('link', name='Signup / Login').click()
+        page.locator('[data-qa="signup-name"]').fill(username)
+        page.locator('[data-qa="signup-email"]').fill(email)
+        page.get_by_role('button', name='Signup').click()
+        expect(page.get_by_text("Enter Account Information")).to_be_visible()
+
+        page.locator('#id_gender1').check()
+        page.locator('#password').fill(password)
+        page.locator('select[data-qa="days"]').select_option("6")
+        page.locator('select[data-qa="months"]').select_option("2")
+        page.locator('select[data-qa="years"]').select_option("1994")
+
+        page.locator('#newsletter').check()
+        page.locator('#optin').check()
+
+        page.locator('#first_name').fill("Test")
+        page.locator('#last_name').fill("User")
+        page.locator('#company').fill("Test Company")
+        page.locator('#address1').fill("123 Test St")
+        page.locator('#address2').fill("Apt 456")
+        page.locator('select[data-qa="country"]').select_option("Israel")
+        page.locator('#state').fill("State")
+        page.locator('#city').fill("City")
+        page.locator('#zipcode').fill("123456")
+        page.locator('#mobile_number').fill("123456789")
+
+        page.get_by_role('button', name='Create Account').click()
+        expect(page.get_by_text("ACCOUNT CREATED!")).to_be_visible()
+        page.locator('[data-qa="continue-button"]').click()
+        page.get_by_text("Logout").click()
 
 def test_ts_1(page):
-
-        username = "Foxitest"
-        password = "Test1234"
+        username, email, password = generate_random_user()
 
         #Step 2
         page.goto("https://automationexercise.com/")
@@ -20,7 +61,7 @@ def test_ts_1(page):
 
         #Step 6
         page.locator('[data-qa="signup-name"]').fill(username)
-        page.locator('[data-qa="signup-email"]').fill("Foxitest@gmail.com")
+        page.locator('[data-qa="signup-email"]').fill(email)
 
         #Step 7
         page.get_by_role('button', name='Signup').click()
@@ -74,10 +115,8 @@ def test_ts_1(page):
 
 #Login User with correct email and password
 def test_ts_2(page):
-
-        username = "Foxitest"
-        password = "Test1234"
-        email = "Foxitest@gmail.com"
+        username, email, password = generate_random_user()
+        register_user(page, username, email, password)
 
         #Step 2
         page.goto("https://automationexercise.com/")
@@ -86,7 +125,7 @@ def test_ts_2(page):
         expect(page).to_have_title("Automation Exercise")
 
         #Step 4
-        page.get_by_text("Signup / Login").click()
+        page.get_by_role('link', name='Signup / Login').click()
 
         #Step 5
         expect(page.get_by_text("Login to your account")).to_be_visible()
