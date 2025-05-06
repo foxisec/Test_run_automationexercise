@@ -146,3 +146,60 @@ def test_ts_2(page):
         #Step 10
         expect(page.get_by_text("Account Deleted!")).to_be_visible()
         page.get_by_text("Continue").click()
+
+def test_ts_3(page):
+        username, email, password = generate_random_user()
+
+        #Step 2
+        page.goto("https://automationexercise.com/")
+
+        #Step 3
+        expect(page).to_have_title("Automation Exercise")
+
+        #Step 4
+        page.get_by_role('link', name='Signup / Login').click()
+
+        #Step 5
+        expect(page.get_by_text("Login to your account")).to_be_visible()
+
+        #Step 6
+        page.locator('[data-qa="login-email"]').fill(email)
+        page.locator('[data-qa="login-password"]').fill(password)
+
+        #Step 7
+        page.locator('[data-qa="login-button"]').click()
+
+        #Step 8
+        expect(page.get_by_text("Your email or password is incorrect!")).to_be_visible()
+
+def test_ts_4(page):
+        username, email, password = generate_random_user()
+        register_user(page, username, email, password)
+
+        # Step 2
+        page.goto("https://automationexercise.com/")
+
+        # Step 3
+        expect(page).to_have_title("Automation Exercise")
+
+        # Step 4
+        page.get_by_role('link', name='Signup / Login').click()
+
+        # Step 5
+        expect(page.get_by_text("Login to your account")).to_be_visible()
+
+        # Step 6
+        page.locator('[data-qa="login-email"]').fill(email)
+        page.locator('[data-qa="login-password"]').fill(password)
+
+        # Step 7
+        page.locator('[data-qa="login-button"]').click()
+
+        # Step 8
+        expect(page.get_by_text(f"Logged in as {username}")).to_be_visible()
+
+        # Step 9
+        page.get_by_text("Logout").click()
+
+        # Step 10
+        expect(page).to_have_url("https://automationexercise.com/login")
